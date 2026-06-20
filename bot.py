@@ -31,10 +31,24 @@ def save_seen(data):
     with open(DB_FILE, "w") as f:
         json.dump(list(data), f)
 
+headers = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/137.0.0.0 Safari/537.36"
+    ),
+    "Accept-Language": "ja-JP,ja;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+}
+
 r = requests.get(
     URL,
-    headers={"User-Agent": "Mozilla/5.0"}
+    headers=headers,
+    timeout=30
 )
+
+print("AMAZON STATUS:", r.status_code)
+print("URL FINALE:", r.url)
 
 print("AMAZON STATUS:", r.status_code)
 
