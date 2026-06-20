@@ -48,6 +48,7 @@ r = requests.get(
 
 if r.status_code != 200:
     print(f"Amazon ha risposto con status {r.status_code}")
+    print(r.text[:1000])
     exit(0)
 
 soup = BeautifulSoup(r.text, "html.parser")
