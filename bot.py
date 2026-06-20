@@ -46,6 +46,9 @@ r = requests.get(
     timeout=30
 )
 
+with open("debug.html", "w", encoding="utf-8") as f:
+    f.write(r.text)
+
 if r.status_code != 200:
     print(f"Amazon ha risposto con status {r.status_code}")
     print(r.text[:1000])
