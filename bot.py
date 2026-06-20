@@ -46,7 +46,9 @@ r = requests.get(
     timeout=30
 )
 
-r.raise_for_status()
+if r.status_code != 200:
+    print(f"Amazon ha risposto con status {r.status_code}")
+    exit(0)
 
 soup = BeautifulSoup(r.text, "html.parser")
 
