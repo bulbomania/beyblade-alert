@@ -11,24 +11,23 @@ URL = "https://www.amazon.co.jp/s?k=beyblade+x&crid=33LWC80LC0AK6&sprefix=%2Caps
 DB_FILE = "seen.json"
 
 def send_message(text):
-    r = requests.post(
+    requests.post(
         f"https://api.telegram.org/bot{TOKEN}/sendMessage",
         json={
             "chat_id": CHAT_ID,
             "text": text
-        }
+        },
+        timeout=30
     )
-
-    print("TELEGRAM STATUS:", r.status_code)
 
 def load_seen():
     if os.path.exists(DB_FILE):
-        with open(DB_FILE) as f:
+        with open(DB_FILE, "r", encoding="utf-8") as f:
             return set(json.load(f))
     return set()
 
 def save_seen(data):
-    with open(DB_FILE, "w") as f:
+    with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump(list(data), f)
 
 headers = {
@@ -47,24 +46,17 @@ r = requests.get(
     timeout=30
 )
 
-print("AMAZON STATUS:", r.status_code)
-print("URL FINALE:", r.url)
-
-print("AMAZON STATUS:", r.status_code)
+r.raise_for_status()
 
 soup = BeautifulSoup(r.text, "html.parser")
 
 items = soup.select("[data-asin]")
-
-print("PRODOTTI TROVATI:", len(items))
 
 seen = load_seen()
 current = set()
 
 for item in items:
     asin = item.get("data-asin", "").strip()
-
-    print("ASIN:", asin)
 
     if not asin:
         continue
@@ -76,13 +68,9 @@ for item in items:
 
     title = title.get_text(strip=True)
 
-    print("TITOLO:", title)
-
     current.add(asin)
 
     if asin not in seen:
-        print("NUOVO PRODOTTO:", title)
-
         send_message(
             f"🆕 Nuovo prodotto Beyblade X:\n\n{title}"
         )
@@ -90,4 +78,5 @@ for item in items:
 seen.update(current)
 save_seen(seen)
 
-print("FINE")
+print(f"Prodotti trovati: {len(current)}")
+print("Controllo completato")
